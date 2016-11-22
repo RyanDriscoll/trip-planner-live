@@ -1,0 +1,110 @@
+{% extends 'layout.html' %}
+
+{% block title %}Your Trip{% endblock %}
+
+{% block content %}
+<div id="app" class="clearfix">
+  <div class="map-container col-sm-8 col-lg-9">
+    <div>
+      <div id="map-canvas"></div>
+    </div>
+  </div>
+  <div id="control-panel" class="col-sm-4 col-lg-3 clearfix">
+    <div class="col-xs-6 col-sm-12">
+      <div class="panel panel-default">
+        <div class="panel-body" id="options-panel">
+          <div>
+            <h4>Hotels</h4>
+            <select data-type="hotel" id="hotel-choices">
+            </select>
+            <button id="add-hotel" data-action="add" class="btn btn-primary btn-circle pull-right">+</button>
+          </div>
+          <div>
+            <h4>Restaurants</h4>
+            <select data-type="restaurant" id="restaurant-choices">
+            </select>
+            <button id="add-restaurant" data-action="add" class="btn btn-primary btn-circle pull-right">+</button>
+          </div>
+          <div>
+            <h4>Activities</h4>
+            <select data-type="activity" id="activity-choices">
+            </select>
+            <button id="add-activity" data-action="add" class="btn btn-primary btn-circle pull-right">+</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-xs-6 col-sm-12">
+      <h3>
+        <span id="day-title">
+          <span>Day 2</span>
+          <button class="btn btn-xs btn-danger remove btn-circle">x</button>
+        </span>
+      </h3>
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <div class="day-buttons">
+            <button class="btn btn-circle day-btn">1</button>
+            <button class="btn btn-circle day-btn current-day">2</button>
+            <button class="btn btn-circle day-btn">3</button>
+            <button class="btn btn-circle day-btn" id="day-add">+</button>
+          </div>
+        </div>
+        <div class="panel-body" id="itinerary">
+          <div>
+            <h4>My Hotel</h4>
+            <ul id="current-day-hotels" class="list-group hotel">
+
+            </ul>
+          </div>
+          <div>
+            <h4>My Restaurants</h4>
+            <ul id="current-day-restaurants" class="list-group restaurant">
+    
+            </ul>
+          </div>
+          <div>
+            <h4>My Activities</h4>
+            <ul id="current-day-activities" class="list-group activity">
+
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+  var hotels = {{ hotels | dump | safe }};
+  var restaurants = {{ restaurants | dump | safe }};
+  var activities = {{ activities | dump | safe }};
+  for (let i = 0; i < hotels.length; i++){
+    $('#hotel-choices').append(`<option data-location="${hotels[i].place.location}">${hotels[i].name}</option>`)
+  };
+  for (let i = 0; i < restaurants.length; i++){
+    $('#restaurant-choices').append(`<option data-location="${restaurants[i].place.location}">${restaurants[i].name}</option>`)
+  };
+   for (let i = 0; i < activities.length; i++){
+    $('#activity-choices').append(`<option data-location="${activities[i].place.location}">${activities[i].name}</option>`)
+  };
+
+    $('#options-panel button').on('click', function(){
+      let selectelement = $(this).prev();
+      
+      
+  
+      let sibselect = $(this).prev().val();
+      
+      let selectedoption = $(`#${selectelement[0].id} option:selected`);
+      var locationarray = selectedoption[0].dataset.location.split(",");
+
+
+      let addedelection = $('')
+      let categoryid = this.id.slice(4);
+        $(`.${categoryid}`).append(`<li>${sibselect}</li>`);
+      marker(categoryid, locationarray);
+
+    });
+
+</script>
+{% endblock %}
