@@ -1,4 +1,4 @@
-let marker;
+let setMarker;
 
 $(function initializeMap (){
 
@@ -58,8 +58,8 @@ $(function initializeMap (){
     marker.setMap(currentMap);
   }
 
-  
-  marker = drawMarker;
+
+  setMarker = drawMarker;
 
 });
 
