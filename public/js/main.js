@@ -1,5 +1,7 @@
 let setMarker;
 
+
+
 $(function initializeMap (){
 
   var fullstackAcademy = new google.maps.LatLng(40.705086, -74.009151);
@@ -56,6 +58,7 @@ $(function initializeMap (){
       position: latLng
     });
     marker.setMap(currentMap);
+    return marker;
   }
 
 

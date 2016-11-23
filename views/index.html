@@ -33,16 +33,16 @@
 		<div class="col-xs-6 col-sm-12">
 			<h3>
 				<span id="day-title">
-          <span>Day 2</span>
+          <span>Day 1</span>
 				<button class="btn btn-xs btn-danger remove btn-circle">x</button>
 				</span>
 			</h3>
 			<div class="panel panel-default">
 				<div class="panel-heading">
 					<div class="day-buttons">
-						<button class="btn btn-circle day-btn">1</button>
-						<button class="btn btn-circle day-btn current-day">2</button>
-						<button class="btn btn-circle day-btn">3</button>
+						<button class="btn btn-circle day-btn current-day">1</button>
+						<!--<button class="btn btn-circle day-btn ">2</button>
+						<button class="btn btn-circle day-btn">3</button>-->
 						<button class="btn btn-circle day-btn" id="day-add">+</button>
 					</div>
 				</div>
@@ -81,28 +81,65 @@
     $('#activity-choices').append(`<option data-location="${activities[i].place.location}">${activities[i].name}</option>`)
   };
 
+  let markerObj = {};
+  let days = [{}];
+  let currentDay = 0;
+  let dayText = 1;
+  // let dayTextStr = dayText.toString();
+
+
+  // add hotel, restaurant, activity
     $('#options-panel button').on('click', function(){
-      let selectelement = $(this).prev();
+      let selector = $(this).prev();
 
+      let selectedText = $(this).prev().val();
 
+      let selectedElement = $(`#${selector[0].id} option:selected`);
+      var locationarray = selectedElement[0].dataset.location.split(",");
 
-      let sibselect = $(this).prev().val();
-
-      let selectedoption = $(`#${selectelement[0].id} option:selected`);
-      var locationarray = selectedoption[0].dataset.location.split(",");
-
-
-      let addedelection = $('')
       let categoryid = this.id.slice(4);
-        $(`.${categoryid}`).append(`<li>${sibselect}</li>`).append('<button class="btn btn-xs btn-danger remove btn-circle">x</button>').data("location", locationarray);
-      setMarker(categoryid, locationarray);
+      // adding days, need to fix day incrementer
+      if (days[currentDay][categoryid]) days[currentDay][categoryid].push(selectedText);
+      else {
+        days[currentDay][categoryid] = [];
+        days[currentDay][categoryid].push(selectedText);
+      }
 
+      console.log(days[currentDay]);
+
+      // adding marker, stored in markerObj
+      let anotherMarker = setMarker(categoryid, locationarray);
+      markerObj[selectedText] = anotherMarker;
+
+      $(`.${categoryid}`).append(`<li>${selectedText}</li>`).append('<button class="btn btn-xs btn-danger remove btn-circle">x</button>').data("marker", anotherMarker);
     });
 
+  // remove hotel, restaurant, activity
     $('#itinerary').on('click', '.remove', function() {
-      console.log($(this).data());
+      let category = $(this).parent()[0].classList[1];
+      let selectedText = $(this).prev()[0].innerText;
+      // console.log('before', days[currentDay][category]);
+      days[currentDay][category].splice(days[currentDay][category].indexOf(selectedText), 1);
+      // console.log('after', days[currentDay][category]);
+      let marker = markerObj[$(this).prev()[0].innerText];
+      marker.setMap(null);
       $(this).prev().remove();
       $(this).remove();
+    })
+
+  // add day
+    $('.day-buttons').on('click', '#day-add', function() {
+      $('.day-buttons').children().removeClass('current-day');
+      $(this).before(`<button class="btn btn-circle day-btn current-day">${dayText + 1}</button>`);
+      $('#itinerary li, #itinerary button').remove();
+      let markerKeyArray = Object.keys(markerObj);
+      markerKeyArray.forEach(function(marker) {
+        markerObj[marker].setMap(null);
+      });
+      days.push({});
+      currentDay++;
+      dayText++;
+      $('#day-title > span').contents(`Day ${dayText}`);
     })
 
 </script> {% endblock %}
